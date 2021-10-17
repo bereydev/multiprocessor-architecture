@@ -57,9 +57,8 @@ double calculate_pi(int num_threads, int samples)
                 num_in_cycle++;
             }
         }
-
-        pi = (double)num_in_cycle / samples * 4;
-
-        return pi;
     }
+    pi = (double)num_in_cycle / samples * 4;
+
+    return pi;
 }

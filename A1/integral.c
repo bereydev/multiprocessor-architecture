@@ -60,9 +60,8 @@ double integrate(int num_threads, int samples, int a, int b, double (*f)(double)
             double f_value = (*f)(point);
             integral += f_value;
         }
-
-        integral = (double)integral / samples * distance;
-
-        return integral;
     }
+    integral = (double)integral / samples * distance;
+
+    return integral;
 }
