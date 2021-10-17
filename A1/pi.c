@@ -11,6 +11,7 @@ SCIPER		: 344589 282962
 #include "utility.h"
 
 double calculate_pi(int num_threads, int samples);
+int num_in_circle(const int samples);
 
 int main(int argc, const char *argv[])
 {
@@ -40,25 +41,38 @@ int main(int argc, const char *argv[])
 double calculate_pi(int num_threads, int samples)
 {
     double pi;
-    int num_in_cycle = 0;
+    int total_in_circle = 0;
 
+    // Devide the work in chuncks
+    const int chunk = samples / num_threads;
     omp_set_num_threads(num_threads);
 
-#pragma omp parallel shared(num_in_cycle)
+// Distribute the work arround threads and reduce the result
+#pragma omp parallel for reduction(+:total_in_circle)
+    for (int i = 0; i < num_threads; i++)
     {
-        rand_gen gen = init_rand();
-#pragma omp for
-        for (int i = 0; i < samples; i++)
-        {
-            double x = next_rand(gen);
-            double y = next_rand(gen);
-            if (x * x + y * y <= 1)
-            {
-                num_in_cycle++;
-            }
-        }
+        total_in_circle += num_in_circle(chunk);
     }
-    pi = (double)num_in_cycle / samples * 4;
+
+    pi = (double)total_in_circle / samples * 4;
 
     return pi;
+}
+
+int num_in_circle(const int samples)
+{
+    int n = 0;
+    rand_gen gen = init_rand();
+
+    for (int i = 0; i < samples; i++)
+    {
+        double x = next_rand(gen);
+        double y = next_rand(gen);
+        if (x * x + y * y <= 1)
+        {
+            n++;
+        }
+    }
+
+    return n;
 }

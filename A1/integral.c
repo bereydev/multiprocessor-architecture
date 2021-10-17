@@ -12,6 +12,7 @@ SCIPER		: 344589 282962
 #include "function.c"
 
 double integrate(int num_threads, int samples, int a, int b, double (*f)(double));
+double getValue(int samples, int a, int b, double (*f)(double));
 
 int main(int argc, const char *argv[])
 {
@@ -48,20 +49,32 @@ double integrate(int num_threads, int samples, int a, int b, double (*f)(double)
 
     const int distance = b - a;
 
+    //devide work in chunks
+    int chunk = samples / num_threads;
     omp_set_num_threads(num_threads);
-
-#pragma omp parallel shared(integral)
+    //distribute chunks among threads
+    double integral = 0;
+#pragma omp parallel for reduction(+:integral)
+    for (int i = 0; i < num_threads; i++)
     {
-        rand_gen gen = init_rand();
-#pragma omp for
-        for (int i = 0; i < samples; i++)
-        {
-            double point = next_rand(gen) * distance + a;
-            double f_value = (*f)(point);
-            integral += f_value;
-        }
+        integral += getValue(chunk, a, b, f)
     }
+
     integral = (double)integral / samples * distance;
 
     return integral;
+}
+
+double getValue(int samples, int a, int b, double (*f)(double))
+{
+    double tot_value = 0;
+    rand_gen gen = init_rand();
+
+    for (int i = 0; i < samples; i++)
+    {
+        double point = next_rand(gen) * (b - a) + a;
+        double f_value = (*f)(point);
+        tot_value += f_value;
+    }
+    return tot_value;
 }

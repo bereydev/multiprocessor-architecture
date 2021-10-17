@@ -65,10 +65,8 @@ void *calculate_pi(void *thread)
 
     for (int i = 0; i < n_samples; i++)
     {
-        // double x = (double)rand() / (double)RAND_MAX;
-        // double y = (double)rand() / (double)RAND_MAX;
-        double x = next_rand(gen);
-        double y = next_rand(gen);
+        double x = (double)rand() / (double)RAND_MAX;
+        double y = (double)rand() / (double)RAND_MAX;
         if (x * x + y * y < 1)
         {
             num_in_circle++;
