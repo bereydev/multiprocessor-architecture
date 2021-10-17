@@ -49,19 +49,20 @@ double integrate(int num_threads, int samples, int a, int b, double (*f)(double)
     const int distance = b - a;
 
     omp_set_num_threads(num_threads);
-    rand_gen gen = init_rand();
 
-#pragma omp parallel for shared(integral)
-
-    for (int i = 0; i < samples; i++)
+#pragma omp parallel shared(integral)
     {
-        // double point = (double)rand() / (double)RAND_MAX * distance + a;
-        double point = next_rand(gen) * distance + a;
-        double f_value = (*f)(point);
-        integral += f_value;
+        rand_gen gen = init_rand();
+#pragma omp for
+        for (int i = 0; i < samples; i++)
+        {
+            double point = next_rand(gen) * distance + a;
+            double f_value = (*f)(point);
+            integral += f_value;
+        }
+
+        integral = (double)integral / samples * distance;
+
+        return integral;
     }
-
-    integral = (double)integral / samples * distance;
-
-    return integral;
 }

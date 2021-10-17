@@ -43,22 +43,23 @@ double calculate_pi(int num_threads, int samples)
     int num_in_cycle = 0;
 
     omp_set_num_threads(num_threads);
-    rand_gen gen = init_rand();
 
-#pragma omp parallel for shared(num_in_cycle)
-    for (int i = 0; i < samples; i++)
+#pragma omp parallel shared(num_in_cycle)
     {
-        double x = next_rand(gen);
-        double y = next_rand(gen);
-        // double x = (double)rand() / (double)RAND_MAX;
-        // double y = (double)rand() / (double)RAND_MAX;
-        if (x * x + y * y <= 1)
+        rand_gen gen = init_rand();
+#pragma omp for
+        for (int i = 0; i < samples; i++)
         {
-            num_in_cycle++;
+            double x = next_rand(gen);
+            double y = next_rand(gen);
+            if (x * x + y * y <= 1)
+            {
+                num_in_cycle++;
+            }
         }
+
+        pi = (double)num_in_cycle / samples * 4;
+
+        return pi;
     }
-
-    pi = (double)num_in_cycle / samples * 4;
-
-    return pi;
 }
