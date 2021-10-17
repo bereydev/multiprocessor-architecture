@@ -53,11 +53,10 @@ double integrate(int num_threads, int samples, int a, int b, double (*f)(double)
     int chunk = samples / num_threads;
     omp_set_num_threads(num_threads);
     //distribute chunks among threads
-    double integral = 0;
 #pragma omp parallel for reduction(+:integral)
     for (int i = 0; i < num_threads; i++)
     {
-        integral += getValue(chunk, a, b, f)
+        integral += getValue(chunk, a, b, f);
     }
 
     integral = (double)integral / samples * distance;
