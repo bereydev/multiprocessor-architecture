@@ -25,19 +25,48 @@ int main (int argc, const char *argv[]) {
 	}
     
     set_clock();
-    perform_buckets_computation(num_threads, num_samples, num_buckets);
+    perform_lanes_computation(num_threads, num_samples, num_buckets);
 
     printf("Using %d threads: %d operations completed in %.4gs.\n", num_threads, num_samples, elapsed_time());
     return 0;
 }
 
-int perform_buckets_computation(int num_threads, int num_samples, int num_buckets) {
-    volatile int *histogram = (int*) calloc(num_buckets, sizeof(int));
+int perform_lanes_computation(int num_threads, int num_samples, int num_buckets) {
+    //volatile int *histogram = (int*) calloc(num_buckets, sizeof(int));
+    int num_samples_per_thread = num_samples/num_threads;
+    int histogram[num_buckets];
+    int tmp_hist[num_threads][num_buckets];
+    
+    
+    #pragma omp parallel for shared (tmp_hist)
+    for (int i = 0; i<num_threads; i++){
+        rand_gen generator = init_rand();
+        for(int j = 0; j<num_samples_per_thread; j++){
+            int tid = omp_get_thread_num();
+            int val = next_rand(generator) * num_buckets;
+            tmp_hist[tid][val]++;
+        }
+        free_rand(generator);
+    }
+    
+    //merge loop
+    #pragma omp parallel for shared (tmp_hist, histogram)
+    for(int i = 0; i<num_buckets; i++){
+        int tid;
+        for(tid = 0; tid < omp_get_thread_num(); tid++){
+            histogram[i] += tmp_hist[tid][i];
+        }
+    }
+    
+    //Not parallel version
+    /*
     rand_gen generator = init_rand();
     for(int i = 0; i < num_samples; i++){
         int val = next_rand(generator) * num_buckets;
         histogram[val]++;
     }
     free_rand(generator);
+    */
+    
     return 0;
 }

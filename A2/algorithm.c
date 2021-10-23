@@ -13,6 +13,9 @@ SCIPER      : Your SCIPER numbers
 
 void simulate(double *input, double *output, int threads, int length, int iterations)
 {
+    //output(i, j) needs input arount him
+    //we 
+    /*
     double *temp;
     
     // Parallelize this!!
@@ -35,5 +38,5 @@ void simulate(double *input, double *output, int threads, int length, int iterat
         temp = input;
         input = output;
         output = temp;
-    }
+    }*/
 }
