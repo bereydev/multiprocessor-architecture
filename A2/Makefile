@@ -1,5 +1,5 @@
 
-CC = gcc-7
+CC = gcc
 CFLAGS = -std=gnu99 -O3 -fopenmp -Wall
 
 all: heatmap sharing

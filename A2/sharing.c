@@ -1,8 +1,8 @@
 /*
 ============================================================================
-Filename    : pi.c
-Author      : Your names goes here
-SCIPER		: Your SCIPER numbers
+Filename    : shaging.c
+Author      : Jonathan Berezyiat and Lenny Del Zio
+SCIPER		: 282962 
 ============================================================================
 */
 
@@ -25,13 +25,13 @@ int main (int argc, const char *argv[]) {
 	}
     
     set_clock();
-    perform_lanes_computation(num_threads, num_samples, num_buckets);
+    perform_bucket_computation(num_threads, num_samples, num_buckets);
 
     printf("Using %d threads: %d operations completed in %.4gs.\n", num_threads, num_samples, elapsed_time());
     return 0;
 }
 
-int perform_lanes_computation(int num_threads, int num_samples, int num_buckets) {
+int perform_bucket_computation(int num_threads, int num_samples, int num_buckets) {
     //volatile int *histogram = (int*) calloc(num_buckets, sizeof(int));
     int num_samples_per_thread = num_samples/num_threads;
     int histogram[num_buckets];

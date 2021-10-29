@@ -1,8 +1,8 @@
 /*
 ============================================================================
 Filename    : algorithm.c
-Author      : Your names go here
-SCIPER      : Your SCIPER numbers
+Author      : Jonathan Berezyiat and Lenny Del Zio
+SCIPER      : 282962 
 
 ============================================================================
 */
@@ -15,12 +15,15 @@ void simulate(double *input, double *output, int threads, int length, int iterat
 {
     //output(i, j) needs input arount him
     //we 
-    /*
+    omp_set_num_threads(threads);
+    
     double *temp;
     
     // Parallelize this!!
+    // #pragma omp parallel shared (input, output)
     for(int n=0; n < iterations; n++)
     {
+        #pragma omp parallel for collapse(2) 
         for(int i=1; i<length-1; i++)
         {
             for(int j=1; j<length-1; j++)
@@ -38,5 +41,5 @@ void simulate(double *input, double *output, int threads, int length, int iterat
         temp = input;
         input = output;
         output = temp;
-    }*/
+    }
 }
