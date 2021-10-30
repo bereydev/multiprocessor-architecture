@@ -20,7 +20,6 @@ void simulate(double *input, double *output, int threads, int length, int iterat
     double *temp;
     
     // Parallelize this!!
-    // #pragma omp parallel shared (input, output)
     for(int n=0; n < iterations; n++)
     {
         #pragma omp parallel for collapse(2) 

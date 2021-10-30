@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "utility.h"
-#include "algorithm.c"
+#include "algorithm2.c"
 
 int main (int argc, const char *argv[]) {
 
