@@ -1,44 +1,61 @@
 /*
 ============================================================================
 Filename    : algorithm.c
-Author      : Jonathan Berezyiat and Lenny Del Zio
-SCIPER      : 282962 
+Author      : Bereyziat/Del Zio
+SCIPER		: 282962/311240
 
 ============================================================================
 */
 #include <math.h>
 
-#define INPUT(I,J) input[(I)*length+(J)]
-#define OUTPUT(I,J) output[(I)*length+(J)]
+#define INPUT(I, J) input[(I)*length + (J)]
+#define OUTPUT(I, J) output[(I)*length + (J)]
+
+void copyRow(int row, int length, double *input, double *output);
+void updateRow(int row, int length, double *input, double *output);
 
 void simulate(double *input, double *output, int threads, int length, int iterations)
 {
     //output(i, j) needs input arount him
-    //we 
+    //we
     omp_set_num_threads(threads);
-    
-    double *temp;
-    
-    // Parallelize this!!
-    for(int n=0; n < iterations; n++)
-    {
-        #pragma omp parallel for collapse(2) 
-        for(int i=1; i<length-1; i++)
-        {
-            for(int j=1; j<length-1; j++)
-            {
-                    if ( ((i == length/2-1) || (i== length/2))
-                        && ((j == length/2-1) || (j == length/2)) )
-                        continue;
+    int row = 0;
 
-                    OUTPUT(i,j) = (INPUT(i-1,j-1) + INPUT(i-1,j) + INPUT(i-1,j+1) +
-                                   INPUT(i,j-1)   + INPUT(i,j)   + INPUT(i,j+1)   +
-                                   INPUT(i+1,j-1) + INPUT(i+1,j) + INPUT(i+1,j+1) )/9;
+#pragma omp parallel private(row) shared(input, output)
+    {
+        for (int n = 0; n < iterations; n++)
+        {
+#pragma omp for
+            for (row = 1; row < length - 1; ++row)
+            {
+                updateRow(row, length, input, output);
+            }
+
+#pragma omp for
+            for (row = 1; row < length - 1; ++row)
+            {
+                copyRow(row, length, input, output);
             }
         }
-
-        temp = input;
-        input = output;
-        output = temp;
     }
+}
+
+void updateRow(int row, int length, double *input, double *output)
+{
+    for (int col = 1; col < length - 1; col++)
+    {
+        if (((row == length / 2 - 1) || (row == length / 2)) && ((col == length / 2 - 1) || (col == length / 2)))
+            continue;
+
+        OUTPUT(row, col) = (INPUT(row - 1, col - 1) + INPUT(row - 1, col) + INPUT(row - 1, col + 1) +
+                            INPUT(row, col - 1) + INPUT(row, col) + INPUT(row, col + 1) +
+                            INPUT(row + 1, col - 1) + INPUT(row + 1, col) + INPUT(row + 1, col + 1)) /
+                           9;
+    }
+}
+
+void copyRow(int row, int length, double *input, double *output)
+{
+    for (int col = 1; col < length - 1; ++col)
+        INPUT(row, col) = OUTPUT(row, col);
 }

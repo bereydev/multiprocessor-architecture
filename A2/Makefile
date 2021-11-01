@@ -4,7 +4,7 @@ CFLAGS = -std=gnu99 -O3 -fopenmp -Wall
 
 all: heatmap sharing
 
-heatmap: heatmap.c utility.h algorithm.c
+heatmap: heatmap.c utility.h algorithm2.c
 	$(CC) $(CFLAGS) $< -o $@
 
 sharing: sharing.c utility.h
