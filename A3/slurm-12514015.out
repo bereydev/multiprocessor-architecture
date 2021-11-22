@@ -1,0 +1,8 @@
+STARTING AT Mon Nov 22 13:51:52 CET 2021
+LOCAL
+Traversing 8 GB array took total time = 1.245 seconds, number of accesses = 44736980, 2.784e-08 seconds per access
+REMOTE
+Traversing 8 GB array took total time = 1.98 seconds, number of accesses = 44736980, 4.426e-08 seconds per access
+INTERLEAVED
+Traversing 8 GB array took total time = 1.59 seconds, number of accesses = 44736980, 3.554e-08 seconds per access
+FINISHED at Mon Nov 22 13:56:13 CET 2021
