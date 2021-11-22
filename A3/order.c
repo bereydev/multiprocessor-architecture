@@ -16,7 +16,7 @@ void *thread1Func(void *param){
 
         X = 1;
         asm volatile("" ::: "memory"); // Prevent any compiler reordering
-        //__sync_synchronize();
+        __sync_synchronize();
         r1 = Y;
 
         t1fin = true; // Signal iteration end
@@ -31,7 +31,7 @@ void *thread2Func(void *param){
 
         Y = 1;
         asm volatile("" ::: "memory"); // Prevent any compiler reordering
-        //__sync_synchronize();
+        __sync_synchronize();
         r2 = X;
 
         t2fin = true; // Signal iteration end

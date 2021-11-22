@@ -11,10 +11,10 @@
 echo STARTING AT `date`
 
 echo SAME SOCKET
-numactl --physcpubind=1 ./order
+numactl --physcpubind=0,1,2 ./order
 
 echo 2 SOCKETS
-numactl --physcpubind=1,2 ./order
+numactl --physcpubind=0,1,17 ./order
 
 
 echo FINISHED at `date`
