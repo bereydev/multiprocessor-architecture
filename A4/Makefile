@@ -9,7 +9,7 @@ all: assignment4.o implementation.o
 assignment4.o: assignment4.cu utility.h implementation.o
 	$(NVCC) $(CFLAGS) $< -o $@
 
-implementation.o: implementation.cu
+implementation.o: implementation.cu utility.h
 	$(NVCC) $(CFLAGS) $< -o $@
 
 clean:

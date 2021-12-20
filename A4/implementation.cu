@@ -9,9 +9,9 @@ SCIPER      : 282962 311240
 #include <iostream>
 #include <iomanip>
 #include <sys/time.h>
-#include "utility.h"
 #include <cuda_runtime.h>
 using namespace std;
+#include "utility.h"
 
 #define INIT_VALUE 1000
 #define INPUT(I, J) input[(I)*length + (J)]
