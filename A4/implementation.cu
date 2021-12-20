@@ -19,7 +19,7 @@ using namespace std;
 #define S_DATA(I, J) sdata[(I)*s_length + (J)]
 
 // helper functions
-__global__ void propagate_heat(double *input, double *output, int length, int i, int j)
+void propagate_heat(double *input, double *output, int length, int i, int j)
 {
     OUTPUT(i, j) = (INPUT(i - 1, j - 1) + INPUT(i - 1, j) + INPUT(i - 1, j + 1) + INPUT(i, j - 1) + INPUT(i, j) + INPUT(i, j + 1) + INPUT(i + 1, j - 1) + INPUT(i + 1, j) + INPUT(i + 1, j + 1)) / 9;
 }
@@ -64,6 +64,7 @@ __global__ void iterate_avoid_center(double *input, double *output, int length)
 {
     int j = (blockIdx.x * blockDim.x) + threadIdx.x;
     int i = (blockIdx.y * blockDim.y) + threadIdx.y;
+    int index = (i * length) + j;
     int middle1 = (length / 2 - 1) * length + length / 2 - 1;
     int middle2 = (length / 2) * length + length / 2 - 1;
     int middle3 = (length / 2 - 1) * length + length / 2;
