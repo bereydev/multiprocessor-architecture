@@ -17,21 +17,6 @@ using namespace std;
 #define OUTPUT(I, J) output[(I)*length + (J)]
 #define S_DATA(I, J) sdata[(I)*s_length + (J)]
 
-// helper functions
-
-void init_middle(double *output, int length)
-{
-    OUTPUT(length / 2 - 1, length / 2 - 1) = INIT_VALUE;
-    OUTPUT(length / 2, length / 2 - 1) = INIT_VALUE;
-    OUTPUT(length / 2 - 1, length / 2) = INIT_VALUE;
-    OUTPUT(length / 2, length / 2) = INIT_VALUE;
-}
-
-void propagate_heat(double *input, double *output, int length, int i, int j)
-{
-    OUTPUT(i, j) = (INPUT(i - 1, j - 1) + INPUT(i - 1, j) + INPUT(i - 1, j + 1) + INPUT(i, j - 1) + INPUT(i, j) + INPUT(i, j + 1) + INPUT(i + 1, j - 1) + INPUT(i + 1, j) + INPUT(i + 1, j + 1)) / 9;
-}
-
 // CPU Baseline
 void array_process(double *input, double *output, int length, int iterations)
 {
@@ -43,10 +28,13 @@ void array_process(double *input, double *output, int length, int iterations)
         {
             for (int j = 1; j < length - 1; j++)
             {
-                propagate_heat(input, output, length, i, j);
+                 OUTPUT(i, j) = (INPUT(i - 1, j - 1) + INPUT(i - 1, j) + INPUT(i - 1, j + 1) + INPUT(i, j - 1) + INPUT(i, j) + INPUT(i, j + 1) + INPUT(i + 1, j - 1) + INPUT(i + 1, j) + INPUT(i + 1, j + 1)) / 9;
             }
         }
-        init_middle(output, length);
+        OUTPUT(length / 2 - 1, length / 2 - 1) = INIT_VALUE;
+        OUTPUT(length / 2, length / 2 - 1) = INIT_VALUE;
+        OUTPUT(length / 2 - 1, length / 2) = INIT_VALUE;
+        OUTPUT(length / 2, length / 2) = INIT_VALUE;
 
         temp = input;
         input = output;
@@ -62,9 +50,12 @@ __global__ void iterate(double *input, double *output, int length)
     int i = (blockIdx.y * blockDim.y) + threadIdx.y;
     if (0 < i && i < length - 1 && 0 < j && j < length - 1)
     {
-        propagate_heat(input, output, length, i, j);
+         OUTPUT(i, j) = (INPUT(i - 1, j - 1) + INPUT(i - 1, j) + INPUT(i - 1, j + 1) + INPUT(i, j - 1) + INPUT(i, j) + INPUT(i, j + 1) + INPUT(i + 1, j - 1) + INPUT(i + 1, j) + INPUT(i + 1, j + 1)) / 9;
     }
-    init_middle(output, length);
+    OUTPUT(length / 2 - 1, length / 2 - 1) = INIT_VALUE;
+    OUTPUT(length / 2, length / 2 - 1) = INIT_VALUE;
+    OUTPUT(length / 2 - 1, length / 2) = INIT_VALUE;
+    OUTPUT(length / 2, length / 2) = INIT_VALUE;
 }
 
 // Iteration branching on the middle cells to avoid rewriting and avoir performing calculations for the 4 of them
@@ -83,7 +74,7 @@ __global__ void iterate_avoid_center(double *input, double *output, int length)
     }
     if (0 < i && i < length - 1 && 0 < j && j < length - 1)
     {
-        propagate_heat(input, output, length, i, j);
+         OUTPUT(i, j) = (INPUT(i - 1, j - 1) + INPUT(i - 1, j) + INPUT(i - 1, j + 1) + INPUT(i, j - 1) + INPUT(i, j) + INPUT(i, j + 1) + INPUT(i + 1, j - 1) + INPUT(i + 1, j) + INPUT(i + 1, j + 1)) / 9;
     }
 }
 
@@ -107,10 +98,13 @@ __global__ void iterate_shared(double *input, double *output, int length)
     {
         if (0 < i && i < length - 1 && 0 < j && j < length - 1)
         {
-            propagate_heat(input, output, length, i, j);
+             OUTPUT(i, j) = (INPUT(i - 1, j - 1) + INPUT(i - 1, j) + INPUT(i - 1, j + 1) + INPUT(i, j - 1) + INPUT(i, j) + INPUT(i, j + 1) + INPUT(i + 1, j - 1) + INPUT(i + 1, j) + INPUT(i + 1, j + 1)) / 9;
         }
     }
-    init_middle(output, length);
+    OUTPUT(length / 2 - 1, length / 2 - 1) = INIT_VALUE;
+    OUTPUT(length / 2, length / 2 - 1) = INIT_VALUE;
+    OUTPUT(length / 2 - 1, length / 2) = INIT_VALUE;
+    OUTPUT(length / 2, length / 2) = INIT_VALUE;
 }
 
 // GPU Optimized function

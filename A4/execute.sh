@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --chdir /home/<username>
+#SBATCH --chdir /home/bereyzia/mularch/A4
 #SBATCH --partition=gpu
 #SBATCH --qos=gpu_free
 #SBATCH --gres=gpu:1
@@ -9,10 +9,10 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mem 1G
 #SBATCH --account cs307
-#SBATCH --reservation cs307-gpu-weekly
+#SBATCH --reservation CS307-GPU-WEEKLY
 
-length=50
-iterations=1
+length=1000
+iterations=10000
 
 module load gcc cuda
 
