@@ -9,6 +9,7 @@ SCIPER      : 282962 311240
 #include <iostream>
 #include <iomanip>
 #include <sys/time.h>
+#include "utility.h"
 #include <cuda_runtime.h>
 using namespace std;
 
@@ -18,14 +19,6 @@ using namespace std;
 #define S_DATA(I, J) sdata[(I)*s_length + (J)]
 
 // helper functions
-__global__ void init_middle(double *input, double *output, int length)
-{
-    OUTPUT(length / 2 - 1, length / 2 - 1) = INIT_VALUE;
-    OUTPUT(length / 2, length / 2 - 1) = INIT_VALUE;
-    OUTPUT(length / 2 - 1, length / 2) = INIT_VALUE;
-    OUTPUT(length / 2, length / 2) = INIT_VALUE;
-}
-
 __global__ void propagate_heat(double *input, double *output, int length, int i, int j)
 {
     OUTPUT(i, j) = (INPUT(i - 1, j - 1) + INPUT(i - 1, j) + INPUT(i - 1, j + 1) + INPUT(i, j - 1) + INPUT(i, j) + INPUT(i, j + 1) + INPUT(i + 1, j - 1) + INPUT(i + 1, j) + INPUT(i + 1, j + 1)) / 9;
@@ -42,12 +35,12 @@ void array_process(double *input, double *output, int length, int iterations)
         {
             for (int j = 1; j < length - 1; j++)
             {
-                propagate_heat(input, output, length, i, j)
+                propagate_heat(input, output, length, i, j);
             }
         }
-        init_middle(input, output, length)
+        init(output, length);
 
-            temp = input;
+        temp = input;
         input = output;
         output = temp;
     }
@@ -61,9 +54,9 @@ __global__ void iterate(double *input, double *output, int length)
     int i = (blockIdx.y * blockDim.y) + threadIdx.y;
     if (0 < i && i < length - 1 && 0 < j && j < length - 1)
     {
-        propagate_heat(input, output, length, i, j)
+        propagate_heat(input, output, length, i, j);
     }
-    init_middle(input, output, length)
+    init(output, length);
 }
 
 // Iteration branching on the middle cells to avoid rewriting and avoir performing calculations for the 4 of them
@@ -81,7 +74,7 @@ __global__ void iterate_avoid_center(double *input, double *output, int length)
     }
     if (0 < i && i < length - 1 && 0 < j && j < length - 1)
     {
-        propagate_heat(input, output, length, i, j)
+        propagate_heat(input, output, length, i, j);
     }
 }
 
@@ -105,10 +98,10 @@ __global__ void iterate_shared(double *input, double *output, int length)
     {
         if (0 < i && i < length - 1 && 0 < j && j < length - 1)
         {
-            propagate_heat(input, output, length, i, j)
+            propagate_heat(input, output, length, i, j);
         }
     }
-    init_middle(input, output, length)
+    init(output, length);
 }
 
 // GPU Optimized function
@@ -142,7 +135,7 @@ void GPU_array_process(double *input, double *output, int length, int iterations
     // Copy array from host to device
     cudaEventRecord(comp_start);
     /* GPU calculation goes here */
-    
+
     // Define a squared thread bloc (chosed option over the commented code under)
     size_t threadBlockSide = 8;
     size_t nbBlockSide = length / threadBlockSide;
@@ -163,7 +156,7 @@ void GPU_array_process(double *input, double *output, int length, int iterations
     // size_t smemSize_shared = threadBlockSide_shared * threadBlockSide_shared * sizeof(double);
     // dim3 thrsPerBlock_shared(threadBlockSide_shared, threadBlockSide_shared);
     // dim3 nBlks_shared(nbBlockSide_shared, nbBlockSide_shared);
-    
+
     // Define a row shaped thread block
     // size_t threadBlockSide_row = length;
     // size_t nbBlockSide_row = 1;
@@ -184,7 +177,7 @@ void GPU_array_process(double *input, double *output, int length, int iterations
         // iterate <<< nBlks, thrsPerBlock >>> (gpu_array_in, gpu_array_out, length);
         // iterate <<< nBlks_row, thrsPerBlock_row >>> (gpu_array_in, gpu_array_out, length);
         // iterate_shared <<< nBlks_shared, thrsPerBlock_shared, smemSize_shared >>> (gpu_array_in, gpu_array_out, length);
-        iterate_avoid_center<<<nBlks, thrsPerBlock> > >(gpu_array_in, gpu_array_out, length);
+        iterate_avoid_center<<<nBlks, thrsPerBlock>>>(gpu_array_in, gpu_array_out, length);
 
         temp = gpu_array_in;
         gpu_array_in = gpu_array_out;
