@@ -18,6 +18,12 @@ module load gcc cuda
 
 echo STARTING AT `date`
 make all
-
-./assignment4 $length $iterations
+echo 100X100 10
+./assignment4 100 10
+echo 100X100 1_000
+./assignment4 100 1000
+echo 1_000X1_000 100
+./assignment4 1000 100
+echo 1_000X1_000 10_000
+./assignment4 1000 10000
 echo FINISHED at `date`

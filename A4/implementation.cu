@@ -148,6 +148,8 @@ void GPU_array_process(double *input, double *output, int length, int iterations
 
     dim3 thrsPerBlock(threadBlockSide, threadBlockSide);
     dim3 nBlks(nbBlockSide, nbBlockSide);
+    // dim3 thrsPerBlock(threadBlockSide, threadBlockSide);
+    // dim3 nBlks(nbBlockSide, nbBlockSide);
 
     // Define the shared memory
     // size_t threadBlockSide_shared = 32;
@@ -157,6 +159,8 @@ void GPU_array_process(double *input, double *output, int length, int iterations
     //     nbBlockSide_shared++;
 
     // size_t smemSize_shared = threadBlockSide_shared * threadBlockSide_shared * sizeof(double);
+    // // dim3 thrsPerBlock_shared(32, 16);
+    // // dim3 nBlks_shared(2, 256);
     // dim3 thrsPerBlock_shared(threadBlockSide_shared, threadBlockSide_shared);
     // dim3 nBlks_shared(nbBlockSide_shared, nbBlockSide_shared);
 
