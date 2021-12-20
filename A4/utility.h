@@ -4,8 +4,6 @@
  Author      : Arash Pourhabibi
  ============================================================================
  */
-#include <iomanip>
-using namespace std;
 
 #ifndef UTILITYH
 #define UTILITYH

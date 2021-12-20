@@ -9,7 +9,7 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mem 1G
 #SBATCH --account cs307
-#SBATCH --reservation CS307-gpu
+#SBATCH --reservation cs307-gpu-weekly
 
 length=50
 iterations=1

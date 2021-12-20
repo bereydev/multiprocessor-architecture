@@ -11,7 +11,6 @@ SCIPER      : 282962 311240
 #include <sys/time.h>
 #include <cuda_runtime.h>
 using namespace std;
-#include "utility.h"
 
 #define INIT_VALUE 1000
 #define INPUT(I, J) input[(I)*length + (J)]
@@ -19,6 +18,15 @@ using namespace std;
 #define S_DATA(I, J) sdata[(I)*s_length + (J)]
 
 // helper functions
+
+void init_middle(double *output, int length)
+{
+    OUTPUT(length / 2 - 1, length / 2 - 1) = INIT_VALUE;
+    OUTPUT(length / 2, length / 2 - 1) = INIT_VALUE;
+    OUTPUT(length / 2 - 1, length / 2) = INIT_VALUE;
+    OUTPUT(length / 2, length / 2) = INIT_VALUE;
+}
+
 void propagate_heat(double *input, double *output, int length, int i, int j)
 {
     OUTPUT(i, j) = (INPUT(i - 1, j - 1) + INPUT(i - 1, j) + INPUT(i - 1, j + 1) + INPUT(i, j - 1) + INPUT(i, j) + INPUT(i, j + 1) + INPUT(i + 1, j - 1) + INPUT(i + 1, j) + INPUT(i + 1, j + 1)) / 9;
@@ -38,7 +46,7 @@ void array_process(double *input, double *output, int length, int iterations)
                 propagate_heat(input, output, length, i, j);
             }
         }
-        init(output, length);
+        init_middle(output, length);
 
         temp = input;
         input = output;
@@ -56,7 +64,7 @@ __global__ void iterate(double *input, double *output, int length)
     {
         propagate_heat(input, output, length, i, j);
     }
-    init(output, length);
+    init_middle(output, length);
 }
 
 // Iteration branching on the middle cells to avoid rewriting and avoir performing calculations for the 4 of them
@@ -102,7 +110,7 @@ __global__ void iterate_shared(double *input, double *output, int length)
             propagate_heat(input, output, length, i, j);
         }
     }
-    init(output, length);
+    init_middle(output, length);
 }
 
 // GPU Optimized function
